@@ -1,6 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
-using PresistenceLayer;
+using PresistenceLayer.Data;
 
 namespace OnlineClinic
 {
