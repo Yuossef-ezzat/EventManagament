@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PresistenceLayer
+namespace PresistenceLayer.Data
 {
     public class EventDbContext: IdentityDbContext<ApplicationUser,IdentityRole<int>,int>
     {
