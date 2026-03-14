@@ -13,7 +13,7 @@ namespace ServiceAbstraction
         Task<IEnumerable<AllEventsDtos>> GetAllAsync();
         Task<int> AddAsync(CreateEventDto entity);
         Task<bool> Update(DetailedEventDto entity);
-        Task<bool> Delete(DetailedEventDto entity);
+        Task<bool> Delete(int Id);
 
 
     }

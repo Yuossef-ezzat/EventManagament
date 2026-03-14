@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DomainLayer.Models.EventModule;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +15,7 @@ namespace Shared.Dtos.EventDtos
         public DateTime Date { get; set; }
         public string Location { get; set; } = null!;
         public int MaxAttendance { get; set; }
-        public string EventStatus { get; set; }
+        public EventStatus EventStatus { get; set; }
         public bool PaymentRequired { get; set; }
 
         #region Relations
