@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentaionLayer", "Present
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresistenceLayer", "PresistenceLayer\PresistenceLayer.csproj", "{DA3D2C4B-EBAB-49A9-9D2F-373D9DC870B1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{D590281E-8E46-4C2B-9AE9-9E18518A7114}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{DA3D2C4B-EBAB-49A9-9D2F-373D9DC870B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA3D2C4B-EBAB-49A9-9D2F-373D9DC870B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA3D2C4B-EBAB-49A9-9D2F-373D9DC870B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D590281E-8E46-4C2B-9AE9-9E18518A7114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D590281E-8E46-4C2B-9AE9-9E18518A7114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D590281E-8E46-4C2B-9AE9-9E18518A7114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D590281E-8E46-4C2B-9AE9-9E18518A7114}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
