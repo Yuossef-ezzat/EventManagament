@@ -1,6 +1,9 @@
 ﻿
+using DomainLayer.Contract;
 using DomainLayer.Models;
+using DomainLayer.Models.EventModule;
 using DomainLayer.Models.PaymentModule;
+using DomainLayer.Models.Registeration;
 using Microsoft.Extensions.Logging;
 using ServiceAbstraction;
 using System.Net.Http.Json;
@@ -18,9 +21,11 @@ namespace ServiceLayer.Services
         private readonly int _iframeId;
         private readonly string _hmacSecretKey;
         private readonly string _baseUrl = "https://accept.paymob.com/api/";
+        IGenaricRepository<Registration, int> _repository;
 
         public PayMobService(
-            IHttpClientFactory httpClientFactory, ILogger<PayMobService> logger)
+            IHttpClientFactory httpClientFactory, ILogger<PayMobService> logger,
+            IGenaricRepository<Registration, int> repository)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
@@ -38,6 +43,8 @@ namespace ServiceLayer.Services
 
             _logger.LogInformation("PayMobService initialized with Integration ID: {IntegrationId}, IFrame ID: {IFrameId}",
                 _integrationId, _iframeId);
+
+            _repository = repository;
         }
 
         private HttpClient CreateClient()
@@ -134,7 +141,7 @@ namespace ServiceLayer.Services
         }
 
         // 3) GET PAYMENT KEY
-        public async Task<string> GetPaymentKeyAsync(string token, int orderId, int amountCents,string attendeid)
+        public async Task<string> GetPaymentKeyAsync(string token, int orderId, int amountCents,int attendeid)
         {
             try
             {
@@ -142,8 +149,8 @@ namespace ServiceLayer.Services
 
                 using var client = CreateClient();
 
-                //GetAttendeUser
-                ApplicationUser attende = null;
+                Registration attende = await _repository
+                    .FindAsync(r => r.UserId == attendeid,new string[] {"User"});
 
                 var body = new
                 {
@@ -154,9 +161,9 @@ namespace ServiceLayer.Services
                     billing_data = new
                     {
                         apartment = attendeid,
-                        email = attende.Email,
+                        email = attende.User.Email,
                         floor = "NA",
-                        first_name = attende.UserName,
+                        first_name = attende.User.UserName,
                         street = "NA",
                         building = "NA",
                         phone_number = "01000000000",
@@ -208,7 +215,7 @@ namespace ServiceLayer.Services
         }
 
         // العملية الكاملة
-        public async Task<string> PayWithCard(int amountCents,string attendeId)
+        public async Task<string> PayWithCard(int amountCents,int attendeId)
         {
             try
             {
@@ -238,7 +245,7 @@ namespace ServiceLayer.Services
         }
 
         // التحقق من Callback
-        public async Task<bool> PaymobCallback(PaymobCallback payload, string hmacHeader,string attendeId)
+        public async Task<bool> PaymobCallback(PaymobCallback payload, string hmacHeader,int attendeId)
         {
             Payment payment = new Payment
             {

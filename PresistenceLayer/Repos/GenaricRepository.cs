@@ -5,6 +5,7 @@ using PresistenceLayer.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,6 +14,16 @@ namespace PresistenceLayer.Repos
     public class GenaricRepository<TEntity, TKey>(EventDbContext _eventDbContext)
                         : IGenaricRepository<TEntity, TKey> where TEntity : BaseEntity<TKey>, new()
     {
+        public async Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> criteria, string[] includes = null)
+        {
+            var entity = _eventDbContext.Set<TEntity>().AsTracking();
+
+            if (includes != null)
+                foreach (var include in includes ?? Array.Empty<string>())
+                    entity = entity.Include(include);
+
+            return await entity.FirstOrDefaultAsync(criteria);
+        }
         public async Task<int> AddAsync(TEntity entity)
         {
              await _eventDbContext.Set<TEntity>().AddAsync(entity);
