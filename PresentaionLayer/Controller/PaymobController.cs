@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using PresentaionLayer.Controller;
 
 namespace EventManagament.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class PaymobController : ControllerBase
+
+    public class PaymobController : ApiBaseController
     {
         //[HttpPost("callback")]
         //[AllowAnonymous]

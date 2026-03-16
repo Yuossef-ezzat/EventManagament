@@ -1,15 +1,10 @@
 ﻿using DomainLayer.Models.EventModule;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Shared.Dtos.EventDtos
 {
-    public class DetailedEventDto
+    public class CreateEventDto
     {
-        public int Id { get; set; }
         public string Title { get; set; } = null!;
         public string? Description { get; set; }
         public DateTime Date { get; set; }
@@ -24,11 +19,6 @@ namespace Shared.Dtos.EventDtos
         public int CategoryId { get; set; }
         public string CategoryName { get; set; } = null!;
 
-        public List<string> Registrations { get; set; } // we need replace string with a more specific DTO if needed
-
-        public List<string> Payments { get; set; }
-
-        public List<string> Notifications { get; set; }
         #endregion
     }
 }

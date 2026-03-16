@@ -1,13 +1,13 @@
 ﻿
 using DomainLayer.Models;
 using DomainLayer.Models.PaymentModule;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
+using ServiceAbstraction;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ServiceAbstraction
+namespace ServiceLayer.Services
 {
     public class PayMobService : IPayMobService
     {
