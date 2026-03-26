@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PresistenceLayer.Data;
+using ServiceAbstraction;
+using ServiceLayer.Services;
 using System.Text;
 
 namespace OnlineClinic
@@ -41,6 +43,9 @@ namespace OnlineClinic
                 };
             });
 
+
+            builder.Services.AddScoped<IEventService,EventService>();
+            builder.Services.AddScoped<IPayMobService, PayMobService>();
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

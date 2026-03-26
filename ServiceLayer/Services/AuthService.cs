@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace ServiceLayer.Services
 {
-    public class AuthenticationService(UserManager<ApplicationUser> _userManager, IConfiguration _configuration)
+    public class AuthService(UserManager<ApplicationUser> _userManager, IConfiguration _configuration)
     {
         public async Task<bool> CheckEmailAsync(string email)
         {

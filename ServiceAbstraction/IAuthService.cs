@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ServiceAbstraction
 {
-    public interface IAuthenticationService
+    public interface IAuthService
     {
         Task<UserDto> LoginAsync(LoginDto loginDto);
         Task<UserDto> RgisterAsync(RegisterDto RegisterDto);
