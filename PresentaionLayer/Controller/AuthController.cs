@@ -20,19 +20,19 @@ namespace PresentaionLayer.Controller
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var emailExists = await authService.CheckEmailAsync(dto.Email);
-            if (emailExists)
+            var emailCheck = await authService.CheckEmailAsync(dto.Email);
+
+            if (emailCheck == null || emailCheck.IsFailure)
+                return BadRequest(new { Message = emailCheck?.Error?.Descriprion ?? "Failed to check email." });
+            
+            if (emailCheck.Value)
                 return Conflict(new { Message = "Email is already registered." });
 
-            try
-            {
-                var result = await authService.RgisterAsync(dto);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Message = ex.Message });
-            }
+            var result = await authService.RgisterAsync(dto);
+            if (result == null || result.IsFailure)
+                return BadRequest(new { Message = result?.Error?.Descriprion ?? "Registration failed." });
+
+            return Ok(result.Value);
         }
 
         // POST: api/auth/login
@@ -42,18 +42,17 @@ namespace PresentaionLayer.Controller
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            try
+            var result = await authService.LoginAsync(dto);
+            if (result == null || result.IsFailure)
             {
-                var result = await authService.LoginAsync(dto);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                var isUnauth = ex.Message.Contains("Unauthorized", StringComparison.OrdinalIgnoreCase);
+                var message = result?.Error?.Message ?? "Login failed.";
+                var isUnauth = message.Contains("Unauthorized", StringComparison.OrdinalIgnoreCase);
                 return isUnauth
                     ? Unauthorized(new { Message = "Invalid email or password." })
-                    : NotFound(new { Message = ex.Message });
+                    : BadRequest(new { Message = message });
             }
+
+            return Ok(result.Value);
         }
 
         // GET: api/auth/me
@@ -65,16 +64,13 @@ namespace PresentaionLayer.Controller
             if (email is null)
                 return Unauthorized(new { Message = "Invalid token." });
 
-            try
-            {
-                var result = await authService.GetCurrentUserAsync(email);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return NotFound(new { Message = ex.Message });
-            }
+            var result = await authService.GetCurrentUserAsync(email);
+            if (result == null || result.IsFailure)
+                return NotFound(new { Message = result?.Error?.Descriprion ?? "User not found." });
+
+            return Ok(result.Value);
         }
+
 
         // GET: api/auth/check-email?email=...
         [HttpGet("check-email")]
@@ -83,8 +79,11 @@ namespace PresentaionLayer.Controller
             if (string.IsNullOrWhiteSpace(email))
                 return BadRequest(new { Message = "Email is required." });
 
-            var exists = await authService.CheckEmailAsync(email);
-            return Ok(new { Exists = exists });
+            var res = await authService.CheckEmailAsync(email);
+            if (res == null || res.IsFailure)
+                return BadRequest(new { Message = res?.Error?.Descriprion ?? "Failed to check email." });
+
+            return Ok(new { Exists = res.Value });
         }
     }
 }

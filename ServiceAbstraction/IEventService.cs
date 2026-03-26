@@ -1,4 +1,5 @@
-﻿using Shared.Dtos.EventDtos;
+﻿using DomainLayer.Abstractions;
+using Shared.Dtos.EventDtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +10,10 @@ namespace ServiceAbstraction
 {
     public interface IEventService
     {
-        Task<DetailedEventDto?> GetByIdAsync(int id);
-        Task<IEnumerable<AllEventsDtos>> GetAllAsync();
-        Task<int> AddAsync(CreateEventDto entity);
-        Task<bool> Update(DetailedEventDto entity);
-        Task<bool> Delete(int Id);
-
-
+        Task<Result<DetailedEventDto>> GetByIdAsync(int id);
+        Task<Result<IEnumerable<AllEventsDtos>>> GetAllAsync();
+        Task<Result<int>> AddAsync(CreateEventDto entity);
+        Task<Result<bool>> Update(DetailedEventDto entity);
+        Task<Result<bool>> Delete(int Id);
     }
 }

@@ -1,4 +1,5 @@
-﻿using DomainLayer.Contract;
+﻿using DomainLayer.Abstractions;
+using DomainLayer.Contract;
 using DomainLayer.Models.EventModule;
 using ServiceAbstraction;
 using Shared.Dtos.EventDtos;
@@ -12,12 +13,14 @@ namespace ServiceLayer.Services
 {
     public class EventService(IGenaricRepository<Event,int> _repository) : IEventService 
     {
-        public Task<int> AddAsync(CreateEventDto Dto)
+        
+        public async Task<Result<int>> AddAsync(CreateEventDto Dto)
         {
             if (Dto.Date <= DateTimeOffset.UtcNow)
-                throw new Exception("Event date must be in the future");
+                return Result<int>.Failure(new Error("Event date must be in the future"));
             if (Dto.MaxAttendance <= 0)
-                throw new Exception("MaxAttendance must be greater than 0");
+                return Result<int>.Failure(new Error("MaxAttendance must be greater than 0"));
+
             var newEvent = new Event
             {
                 Title = Dto.Title,
@@ -30,20 +33,28 @@ namespace ServiceLayer.Services
                 EventStatus = Dto.EventStatus,
                 PaymentRequired = Dto.PaymentRequired,
             };
-            return _repository.AddAsync(newEvent);
-        }
 
-        public async Task<bool> Delete(int Id)
+            var addedId = await _repository.AddAsync(newEvent);
+            return Result<int>.Success(addedId);
+        }
+        public async Task<Result<bool>> Delete(int Id)
         {
             var eventToDelete = await _repository.GetByIdAsync(Id);
             if (eventToDelete == null)
-                return false;
-            return await _repository.Delete(eventToDelete);
+                return Result<bool>.Failure(new Error("Event not found"));
+
+            var deleted = await _repository.Delete(eventToDelete);
+            if (!deleted)
+                return Result<bool>.Failure(new Error("Failed to delete event"));
+
+            return Result<bool>.Success(true);
         }
 
-        public async Task<IEnumerable<AllEventsDtos>> GetAllAsync()
+        public async Task<Result<IEnumerable<AllEventsDtos>>> GetAllAsync()
         {
             var events = await _repository.GetAllAsync();
+            if (events == null || !events.Any())
+                return Result<IEnumerable<AllEventsDtos>>.Failure(new Error ("No Events"));
             var eventsDtos = events.Select(e => new AllEventsDtos
             {
                 Id = e.Id,
@@ -58,14 +69,15 @@ namespace ServiceLayer.Services
                 PaymentRequired = e.PaymentRequired,
                 MaxAttendance = e.MaxAttendance,
             });
-            return eventsDtos;
+            return Result< IEnumerable < AllEventsDtos >>.Success(eventsDtos) ;
         }
 
-        public async Task<DetailedEventDto?> GetByIdAsync(int id)
+        public async Task<Result<DetailedEventDto>> GetByIdAsync(int id)
         {
             var eventEntity = await _repository.GetByIdAsync(id);
             if (eventEntity == null)
-                return null;
+                return Result<DetailedEventDto>.Failure(new Error("Event not found"));
+
             var eventDto = new DetailedEventDto
             {
                 Id = eventEntity.Id,
@@ -74,26 +86,29 @@ namespace ServiceLayer.Services
                 Date = eventEntity.Date,
                 Location = eventEntity.Location,
                 OrganizerId = eventEntity.OrganizerId,
-                OrganizerName = eventEntity.Organizer?.UserName ?? "", 
+                OrganizerName = eventEntity.Organizer?.UserName ?? "",
                 CategoryId = eventEntity.CategoryId,
                 CategoryName = eventEntity.Category.Name,
                 EventStatus = eventEntity.EventStatus,
                 PaymentRequired = eventEntity.PaymentRequired,
                 MaxAttendance = eventEntity.MaxAttendance,
-                Registrations = eventEntity.Registrations?.Select(r => r.Id.ToString()).ToList() ?? [], 
-                Payments = eventEntity.Payments?.Select(p => p.Id.ToString()).ToList() ?? [],
-                Notifications = eventEntity.Notifications?.Select(n => n.Id.ToString()).ToList() ?? [],
+                Registrations = eventEntity.Registrations?.Select(r => r.Id.ToString()).ToList() ?? new List<string>(),
+                Payments = eventEntity.Payments?.Select(p => p.Id.ToString()).ToList() ?? new List<string>(),
+                Notifications = eventEntity.Notifications?.Select(n => n.Id.ToString()).ToList() ?? new List<string>(),
             };
-            return eventDto;
+            return Result<DetailedEventDto>.Success(eventDto);
         }
 
-        public async Task<bool> Update(DetailedEventDto dto)
+        public async Task<Result<bool>> Update(DetailedEventDto dto)
         {
-            if (dto == null) return false;
+            if (dto == null)
+                return Result<bool>.Failure(new Error("Invalid event data"));
             if (dto.Date <= DateTimeOffset.UtcNow)
-                throw new Exception("Event date must be in the future");
+                return Result<bool>.Failure(new Error("Event date must be in the future"));
+
             var existingEvent = await _repository.GetByIdAsync(dto.Id);
-            if (existingEvent == null) return false;
+            if (existingEvent == null)
+                return Result<bool>.Failure(new Error("Event not found"));
 
             existingEvent.Title = dto.Title;
             existingEvent.Description = dto.Description;
@@ -105,7 +120,11 @@ namespace ServiceLayer.Services
             existingEvent.PaymentRequired = dto.PaymentRequired;
             existingEvent.MaxAttendance = dto.MaxAttendance;
 
-            return  await _repository.Update(existingEvent);
+            var updated = await _repository.Update(existingEvent);
+            if (!updated)
+                return Result<bool>.Failure(new Error("Failed to update event"));
+
+            return Result<bool>.Success(true);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Shared.Dtos.AuthDtos;
+﻿using DomainLayer.Abstractions;
+using Shared.Dtos.AuthDtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace ServiceAbstraction
 {
     public interface IAuthService
     {
-        Task<UserDto> LoginAsync(LoginDto loginDto);
-        Task<UserDto> RgisterAsync(RegisterDto RegisterDto);
-        Task<bool> CheckEmailAsync(string email);
-        Task<UserDto> GetCurrentUserAsync(string email);
+        Task<Result<UserDto>> LoginAsync(LoginDto loginDto);
+        Task<Result<UserDto>> RgisterAsync(RegisterDto RegisterDto);
+        Task<Result<bool>> CheckEmailAsync(string email);
+        Task<Result<UserDto>> GetCurrentUserAsync(string email);
     }
 }
