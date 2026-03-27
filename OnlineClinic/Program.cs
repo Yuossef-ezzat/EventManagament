@@ -1,4 +1,5 @@
 
+using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -15,14 +16,18 @@ namespace OnlineClinic
         {
             var builder = WebApplication.CreateBuilder(args);
 
+
+            Env.Load();
             // Add services to the container.
 
             //DbContext
             builder.Services.AddDbContext<EventDbContext>(
                 options => {
-                    options.UseSqlServer(builder.Configuration.GetConnectionString("EventDbContext"));
+                    options.UseSqlServer(Environment.GetEnvironmentVariable("EventDbContext"));
                 }
             );
+
+            builder.Services.AddHttpClient();
 
             builder.Services.AddAuthentication(Config =>
             {
@@ -39,7 +44,7 @@ namespace OnlineClinic
                     ValidAudience = builder.Configuration["JwtOptions:Audience"],
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtOptions:SecretKey"]!)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWTSecretKey")!)),
                 };
             });
 
