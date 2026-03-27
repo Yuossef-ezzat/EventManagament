@@ -149,8 +149,8 @@ namespace ServiceLayer.Services
 
                 using var client = CreateClient();
 
-                Registration attende = await _repository
-                    .FindAsync(r => r.UserId == attendeid,new string[] {"User"});
+                var attende = await _repository
+                    .FindAsync(a => a.Id == attendeid,new string[] {"User"});
 
                 var body = new
                 {

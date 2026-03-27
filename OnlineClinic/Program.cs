@@ -1,11 +1,15 @@
-
+using DomainLayer.Contract;
+using DomainLayer.Models;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PresistenceLayer.Data;
+using PresistenceLayer.Repos;
 using ServiceAbstraction;
 using ServiceLayer.Services;
+using System;
 using System.Text;
 
 namespace OnlineClinic
@@ -48,12 +52,28 @@ namespace OnlineClinic
                 };
             });
 
+            //  builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            //  {
+            //      options.SignIn.RequireConfirmedAccount = true;
+            //      options.Password.RequireDigit = true;
+            //      options.Password.RequiredLength = 8;
+            //      options.Password.RequireNonAlphanumeric = false;
+            //      options.Password.RequireUppercase = true;
+            //      options.Password.RequireLowercase = true;
 
+            //  }).AddEntityFrameworkStores<EventDbContext>()
+            //.AddDefaultTokenProviders();
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
+                .AddEntityFrameworkStores<EventDbContext>()
+                .AddDefaultTokenProviders();
+
+            builder.Services.AddScoped<IAuthService,AuthService>();
             builder.Services.AddScoped<IEventService,EventService>();
             builder.Services.AddScoped<IPayMobService, PayMobService>();
+            builder.Services.AddScoped(typeof(IGenaricRepository<,>), typeof(GenaricRepository<,>));
 
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
             var app = builder.Build();
