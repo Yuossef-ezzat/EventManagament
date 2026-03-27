@@ -52,21 +52,17 @@ namespace OnlineClinic
                 };
             });
 
-            //  builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-            //  {
-            //      options.SignIn.RequireConfirmedAccount = true;
-            //      options.Password.RequireDigit = true;
-            //      options.Password.RequiredLength = 8;
-            //      options.Password.RequireNonAlphanumeric = false;
-            //      options.Password.RequireUppercase = true;
-            //      options.Password.RequireLowercase = true;
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = true;
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
 
-            //  }).AddEntityFrameworkStores<EventDbContext>()
-            //.AddDefaultTokenProviders();
-
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
-                .AddEntityFrameworkStores<EventDbContext>()
-                .AddDefaultTokenProviders();
+            }).AddEntityFrameworkStores<EventDbContext>()
+          .AddDefaultTokenProviders();
 
             builder.Services.AddScoped<IAuthService,AuthService>();
             builder.Services.AddScoped<IEventService,EventService>();
