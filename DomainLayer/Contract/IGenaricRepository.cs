@@ -11,7 +11,7 @@ namespace DomainLayer.Contract
     public interface IGenaricRepository<TEntity,TKey>  where TEntity : BaseEntity<TKey> , new()
     {
         Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> criteria, string[] includes = null);
-        Task<TEntity?> GetByIdAsync(TKey id);
+        IQueryable<TDto> FindAllAsync<TDto>(Expression<Func<TEntity, bool>> criteria, string[] includes = null);        Task<TEntity?> GetByIdAsync(TKey id);
         Task<IEnumerable<TEntity>> GetAllAsync();
         Task<int> AddAsync(TEntity entity);
         Task<bool> Update(TEntity entity);

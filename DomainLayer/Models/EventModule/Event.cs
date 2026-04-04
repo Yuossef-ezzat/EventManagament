@@ -1,4 +1,5 @@
-﻿using DomainLayer.Models.PaymentModule;
+﻿using DomainLayer.Models.NotificationModule;
+using DomainLayer.Models.PaymentModule;
 using DomainLayer.Models.Registeration;
 using System;
 using System.Collections.Generic;

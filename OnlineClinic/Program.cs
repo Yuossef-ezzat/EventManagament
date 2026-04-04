@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PresistenceLayer.Data;
+using PresistenceLayer.Data.Configurations;
 using PresistenceLayer.Repos;
 using ServiceAbstraction;
 using ServiceLayer.Services;
@@ -25,7 +26,7 @@ namespace OnlineClinic
             // Add services to the container.
 
             //DbContext
-            builder.Services.AddDbContext<EventDbContext>(
+            builder.Services.AddDbContextPool<EventDbContext>(
                 options => {
                     options.UseSqlServer(Environment.GetEnvironmentVariable("EventDbContext"));
                 }
@@ -67,10 +68,12 @@ namespace OnlineClinic
             builder.Services.AddScoped<IAuthService,AuthService>();
             builder.Services.AddScoped<IEventService,EventService>();
             builder.Services.AddScoped<IPayMobService, PayMobService>();
+            builder.Services.AddScoped<INotifService, NotifService>();
             builder.Services.AddScoped(typeof(IGenaricRepository<,>), typeof(GenaricRepository<,>));
 
             builder.Services.AddControllers();
             builder.Services.AddOpenApi();
+            builder.Services.RegisterMapsterConfiguration();
 
             var app = builder.Build();
 

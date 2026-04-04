@@ -1,4 +1,5 @@
 ﻿using DomainLayer.Models.EventModule;
+using DomainLayer.Models.NotificationModule;
 using DomainLayer.Models.PaymentModule;
 using DomainLayer.Models.Registeration;
 using Microsoft.AspNetCore.Identity;
@@ -12,10 +13,10 @@ namespace DomainLayer.Models
 {
     public class ApplicationUser : IdentityUser<int>
     {
-        public List<Event> OrganizedEvents { get; set; }
-        public List<Registration> Registrations { get; set; }
-        public List<Payment> Payments { get; set; }
-        public List<Notification> Notifications { get; set; }
+        public List<Event>? OrganizedEvents { get; set; }
+        public List<Registration>? Registrations { get; set; }
+        public List<Payment>? Payments { get; set; }
+        public List<UserNotification>? Notifications { get; set; }
 
     }
 }
