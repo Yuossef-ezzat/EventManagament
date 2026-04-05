@@ -14,6 +14,6 @@ namespace ServiceAbstraction
         Task<Result<UserDto>> RgisterAsync(RegisterDto RegisterDto);
         Task<Result<bool>> CheckEmailAsync(string email);
         Task<Result<UserDto>> GetCurrentUserAsync(string email);
-        Task<Result<UserDto>> CreateOrganizer(RegisterDto RegisterDto);
+        Task<Result<UserDto>> CreateOrganizerAsync(RegisterDto RegisterDto);
     }
 }

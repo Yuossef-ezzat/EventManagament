@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace ServiceLayer.Services
 {
-    public class AuthService(UserManager<ApplicationUser> _userManager, IConfiguration _configuration,RoleManager<ApplicationUser> _roleManager) : IAuthService
+    public class AuthService(UserManager<ApplicationUser> _userManager, IConfiguration _configuration) : IAuthService
     {
         public async Task<Result<bool>> CheckEmailAsync(string email)
         {
@@ -70,7 +70,7 @@ namespace ServiceLayer.Services
                 return Result<UserDto>.Failure(new Error(ex.Message));
             }
         }
-        public async Task<Result<UserDto>> CreateOrganizer(RegisterDto RegisterDto)
+        public async Task<Result<UserDto>> CreateOrganizerAsync(RegisterDto RegisterDto)
         {
             var user = new ApplicationUser
             {
