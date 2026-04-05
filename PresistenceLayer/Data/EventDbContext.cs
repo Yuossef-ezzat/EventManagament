@@ -1,5 +1,6 @@
 ﻿using DomainLayer.Models;
 using DomainLayer.Models.EventModule;
+using DomainLayer.Models.NotificationModule;
 using DomainLayer.Models.PaymentModule;
 using DomainLayer.Models.Registeration;
 using Microsoft.AspNetCore.Identity;
@@ -23,6 +24,7 @@ namespace PresistenceLayer.Data
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Registration> Registerations { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<UserNotification> UserNotifications { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfigurationsFromAssembly(typeof(EventDbContext).Assembly);

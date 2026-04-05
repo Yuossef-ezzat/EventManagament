@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ServiceLayer.Services
 {
-    public class EventService(IGenaricRepository<Event,int> _repository) : IEventService 
+    public class EventService(IGenaricRepository<Event,int> _repository,INotifService notifService) : IEventService 
     {
         
         public async Task<Result<int>> AddAsync(CreateEventDto Dto)
@@ -35,6 +35,8 @@ namespace ServiceLayer.Services
             };
 
             var addedId = await _repository.AddAsync(newEvent);
+
+            await notifService.SendNotification($"New event created: {newEvent.Title} on {newEvent.Date:MMMM dd, yyyy} at {newEvent.Location}.");
             return Result<int>.Success(addedId);
         }
         public async Task<Result<bool>> Delete(int Id)
@@ -46,6 +48,8 @@ namespace ServiceLayer.Services
             var deleted = await _repository.Delete(eventToDelete);
             if (!deleted)
                 return Result<bool>.Failure(new Error("Failed to delete event"));
+
+            await notifService.SendNotification($"Event deleted: {eventToDelete.Title} scheduled on {eventToDelete.Date:MMMM dd, yyyy} at {eventToDelete.Location}.");
 
             return Result<bool>.Success(true);
         }
@@ -106,7 +110,7 @@ namespace ServiceLayer.Services
             if (dto.Date <= DateTimeOffset.UtcNow)
                 return Result<bool>.Failure(new Error("Event date must be in the future"));
 
-            var existingEvent = await _repository.GetByIdAsync(dto.Id);
+            var existingEvent = await _repository.FindAsync(e => e.Id == dto.Id,new string[] { "Registrations.User" });
             if (existingEvent == null)
                 return Result<bool>.Failure(new Error("Event not found"));
 
@@ -123,6 +127,10 @@ namespace ServiceLayer.Services
             var updated = await _repository.Update(existingEvent);
             if (!updated)
                 return Result<bool>.Failure(new Error("Failed to update event"));
+
+            var registerdUsers = existingEvent.Registrations;
+
+            await notifService.SendNotificationForRegisterdUserAtEvent(registerdUsers,$"Event updated: {existingEvent.Title} now scheduled on {existingEvent.Date:MMMM dd, yyyy} at {existingEvent.Location}.");
 
             return Result<bool>.Success(true);
         }
