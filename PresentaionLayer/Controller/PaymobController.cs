@@ -9,7 +9,8 @@ using ServiceAbstraction;
 
 namespace EventManagament.Controllers;
 
-
+[ApiController]
+[Route("api/[controller]")]
 public class PaymobController(ILogger<PaymobCallback> logger,IPayMobService payMobService) : ApiBaseController
 {
     [HttpPost("Pay/{amountCents}/{attendid}")]

@@ -53,7 +53,7 @@ namespace OnlineClinic
                 };
             });
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = true;
                 options.Password.RequireDigit = true;
@@ -61,12 +61,13 @@ namespace OnlineClinic
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = true;
                 options.Password.RequireLowercase = true;
-
-            }).AddEntityFrameworkStores<EventDbContext>()
-          .AddDefaultTokenProviders();
+            })
+            .AddEntityFrameworkStores<EventDbContext>()
+            .AddDefaultTokenProviders();
 
             builder.Services.AddScoped<IAuthService,AuthService>();
             builder.Services.AddScoped<IEventService,EventService>();
+            builder.Services.AddScoped<IEmailService,EmailService>();
             builder.Services.AddScoped<IPayMobService, PayMobService>();
             builder.Services.AddScoped<INotifService, NotifService>();
             builder.Services.AddScoped(typeof(IGenaricRepository<,>), typeof(GenaricRepository<,>));
@@ -85,8 +86,9 @@ namespace OnlineClinic
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseAuthentication();
 
+            app.UseAuthorization();
 
             app.MapControllers();
 

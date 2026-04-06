@@ -10,7 +10,7 @@ namespace PresistenceLayer.Data.Configurations
      {
          public void Configure(EntityTypeBuilder<UserNotification> builder)
          {
-            builder.HasKey(un => new { un.UserId, un.NotifId });
+            //builder.HasKey(un => new { un.UserId, un.NotifId });
 
             builder.HasOne(un => un.Notification)
                    .WithMany(n => n.UserNotifications)

@@ -36,6 +36,7 @@ public class AuthController(IAuthService authService) : ControllerBase
 
         return Ok(result.Value);
     }
+    //[Authorize(Roles = "Admin")]
     [HttpPost("CreateOrganizer")]
     public async Task<IActionResult> CreateOrganizer([FromBody] RegisterDto dto)
     {

@@ -82,7 +82,7 @@ namespace ServiceLayer.Services
             {
                 try
                 {
-                    //await _userManager.AddToRoleAsync(user, "Organizer");
+                    await _userManager.AddToRoleAsync(user, "Organizer");
                     var token = await GenerateJwtToken(user);
                     return Result<UserDto>.Success(new UserDto
                     {
@@ -115,7 +115,8 @@ namespace ServiceLayer.Services
             {
                 try
                 {
-                    //await _userManager.AddToRoleAsync(user, "Attendee");
+                    await _userManager.AddToRoleAsync(user, "Attendee");
+                    //await _userManager.AddToRoleAsync(user, "Admin");
                     var token = await GenerateJwtToken(user);
                     return Result<UserDto>.Success(new UserDto
                     {
