@@ -1,6 +1,9 @@
 @OnlineClinic_HostAddress = http://localhost:5172
 
-GET {{OnlineClinic_HostAddress}}/weatherforecast/
+GET {{OnlineClinic_HostAddress}}//api/Registration/register
 Accept: application/json
+
+
+
 
 ###

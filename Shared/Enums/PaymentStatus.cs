@@ -9,6 +9,9 @@ namespace DomainLayer.Models.PaymentModule
     public enum PaymentStatus
     {
         Success = 1,
-        Failed = 2
+        Failed = 2,
+        pending = 3,
+        Required = 4,
+        NorRequired = 5
     }
 }

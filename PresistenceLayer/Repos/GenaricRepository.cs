@@ -51,7 +51,10 @@ namespace PresistenceLayer.Repos
         { 
             _eventDbContext.Set<TEntity>().Update(entity);
             return await _eventDbContext.SaveChangesAsync() > 0 ;
-
+        }
+        public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await _eventDbContext.Set<TEntity>().AnyAsync(predicate);
         }
     }
 }

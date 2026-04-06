@@ -52,7 +52,7 @@ namespace OnlineClinic
                 };
             });
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = true;
                 options.Password.RequireDigit = true;
@@ -67,24 +67,34 @@ namespace OnlineClinic
             builder.Services.AddScoped<IAuthService,AuthService>();
             builder.Services.AddScoped<IEventService,EventService>();
             builder.Services.AddScoped<IPayMobService, PayMobService>();
+            builder.Services.AddScoped<IRegisrationService, RegistrationService>();
             builder.Services.AddScoped(typeof(IGenaricRepository<,>), typeof(GenaricRepository<,>));
-
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
             builder.Services.AddControllers();
             builder.Services.AddOpenApi();
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
+            //if (app.Environment.IsDevelopment())
+            //{
+            //    app.MapOpenApi();
+            //}
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
+            //app.UseHttpsRedirection();
 
+            //app.UseAuthorization();
+
+            app.UseStaticFiles();
+            app.UseAuthorization();
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
-
             app.MapControllers();
 
             app.Run();
