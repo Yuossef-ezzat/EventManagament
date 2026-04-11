@@ -14,9 +14,10 @@ using System.Threading.Tasks;
 
 namespace ServiceLayer.Services
 {
-    public class RegistrationService(IGenaricRepository<Registration, int> repository) : IRegisrationService
+    public class RegistrationService(IGenaricRepository<Registration, int> repository ,IGenaricRepository<Event, int> eventRepository) : IRegisrationService
     {
         private readonly IGenaricRepository<Registration, int> _repository = repository;
+        private readonly IGenaricRepository<Event, int> _eventRepository = eventRepository ;
 
         private readonly IPayMobService _paymentService;
         public async Task<Result<bool>> CancelRegistrationAsync(CancleRegisrationDto cancleRegisration)
@@ -56,8 +57,8 @@ namespace ServiceLayer.Services
                 EventLocation = registration.Event.Location,
                 PaymentRequired = registration.Event.PaymentRequired,
                 Status = registration.RegisterationStatus.ToString(),
-                PaymentStatus = registration.paymentStatus.ToString(),
-                RegisteredAt = registration.RegisteredAt
+                //PaymentStatus = registration.paymentStatus.ToString(),
+                //RegisteredAt = registration.RegisteredAt
             };
 
             return Result<RegistrationDto>.Success(result);
@@ -74,26 +75,26 @@ namespace ServiceLayer.Services
             var UserRegisterd = await IsUserAlreadyRegisteredAsync(requestDto.UserId, requestDto.EventId);
             if (UserRegisterd)
                 throw new InvalidOperationException("You'r already registered for this event.");
-            var eventEntity = await _repository.FindAsync(e => e.Id == requestDto.EventId, includes: null);
+            var eventEntity = await _eventRepository.FindAsync(e => e.Id == requestDto.EventId, includes: null);
 
-            if (eventEntity == null)
-                throw new KeyNotFoundException("الحدث غير موجود");
+            //if (eventEntity == null)
+            //    throw new KeyNotFoundException("");
 
             
-            if (eventEntity.RegisterationStatus == RegistrationStatus.canceled || eventEntity.RegisterationStatus == RegistrationStatus.finished)
-                throw new InvalidOperationException("لا يمكن التسجيل في حدث ملغي أو منتهي");
+            //if (eventEntity.RegisterationStatus == RegistrationStatus.canceled || eventEntity.RegisterationStatus == RegistrationStatus.finished)
+            //    throw new InvalidOperationException("");
 
             
             var registration = new Registration
             {
                 UserId = requestDto.UserId,
                 EventId = requestDto.EventId,
-                RegisteredAt = DateTime.UtcNow,
+                //RegisteredAt = DateTime.UtcNow,
 
                 // لو الحدث مجاني → Confirmed مباشرة
                 // لو الحدث مدفوع → Pending لحد ما يدفع
-                RegisterationStatus = eventEntity.Event.PaymentRequired ? RegistrationStatus.Pending : RegistrationStatus.Paid,
-                paymentStatus = eventEntity.Event.PaymentRequired ? PaymentStatus.pending : PaymentStatus.NorRequired
+                RegisterationStatus = eventEntity.PaymentRequired ? RegistrationStatus.Pending : RegistrationStatus.Paid,
+                //paymentStatus = eventEntity.Event.PaymentRequired ? PaymentStatus.pending : PaymentStatus.NorRequired
 
             };
             await _repository.AddAsync(registration);
@@ -104,8 +105,8 @@ namespace ServiceLayer.Services
                 UserId = registration.UserId,
                 EventId = registration.EventId,
                 Status = registration.RegisterationStatus.ToString(),
-                PaymentStatus = registration.paymentStatus.ToString(),
-                RegisteredAt = registration.RegisteredAt
+                //PaymentStatus = registration.paymentStatus.ToString(),
+                //RegisteredAt = registration.RegisteredAt
             };
 
             return Result<RegistrationDto>.Success(response);

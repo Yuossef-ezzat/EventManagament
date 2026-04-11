@@ -5,14 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using PresistenceLayer.Data;
 
 #nullable disable
 
-namespace PresistenceLayer.Data.Migrations
+namespace PresistenceLayer.Migrations
 {
     [DbContext(typeof(EventDbContext))]
-    [Migration("20260309141850_IntialCreate")]
-    partial class IntialCreate
+    [Migration("20260409123212_RegisterdAt")]
+    partial class RegisterdAt
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -157,7 +158,35 @@ namespace PresistenceLayer.Data.Migrations
                     b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("DomainLayer.Models.Notification", b =>
+            modelBuilder.Entity("DomainLayer.Models.NotificationModule.Notification", b =>
+                {
+                    b.Property<int>("NotifId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotifId"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("NotifId");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("DomainLayer.Models.NotificationModule.UserNotification", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -165,27 +194,22 @@ namespace PresistenceLayer.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("EventId")
+                    b.Property<int>("NotifId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EventId");
+                    b.HasIndex("NotifId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("UserNotifications");
                 });
 
             modelBuilder.Entity("DomainLayer.Models.PaymentModule.Payment", b =>
@@ -234,7 +258,13 @@ namespace PresistenceLayer.Data.Migrations
                     b.Property<int>("RegisterationStatus")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("RegisteredAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("paymentStatus")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -398,21 +428,28 @@ namespace PresistenceLayer.Data.Migrations
                     b.Navigation("Organizer");
                 });
 
-            modelBuilder.Entity("DomainLayer.Models.Notification", b =>
+            modelBuilder.Entity("DomainLayer.Models.NotificationModule.Notification", b =>
                 {
-                    b.HasOne("DomainLayer.Models.EventModule.Event", "Event")
+                    b.HasOne("DomainLayer.Models.EventModule.Event", null)
                         .WithMany("Notifications")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("EventId");
+                });
+
+            modelBuilder.Entity("DomainLayer.Models.NotificationModule.UserNotification", b =>
+                {
+                    b.HasOne("DomainLayer.Models.NotificationModule.Notification", "Notification")
+                        .WithMany("UserNotifications")
+                        .HasForeignKey("NotifId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DomainLayer.Models.ApplicationUser", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Event");
+                    b.Navigation("Notification");
 
                     b.Navigation("User");
                 });
@@ -529,6 +566,11 @@ namespace PresistenceLayer.Data.Migrations
                     b.Navigation("Payments");
 
                     b.Navigation("Registrations");
+                });
+
+            modelBuilder.Entity("DomainLayer.Models.NotificationModule.Notification", b =>
+                {
+                    b.Navigation("UserNotifications");
                 });
 #pragma warning restore 612, 618
         }

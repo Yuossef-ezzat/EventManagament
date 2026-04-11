@@ -70,20 +70,19 @@ namespace ServiceLayer.Services
                 return Result<UserDto>.Failure(new Error(ex.Message));
             }
         }
-
-        public async Task<Result<UserDto>> RgisterAsync(RegisterDto RegisterDto)
+        public async Task<Result<UserDto>> CreateOrganizerAsync(RegisterDto RegisterDto)
         {
             var user = new ApplicationUser
             {
                 Email = RegisterDto.Email,
                 UserName = RegisterDto.UserName ?? RegisterDto.Email.Split("@")[0],
             };
-
             var result = await _userManager.CreateAsync(user, RegisterDto.Password);
             if (result.Succeeded)
             {
                 try
                 {
+                    await _userManager.AddToRoleAsync(user, "Organizer");
                     var token = await GenerateJwtToken(user);
                     return Result<UserDto>.Success(new UserDto
                     {
@@ -103,7 +102,40 @@ namespace ServiceLayer.Services
                 return Result<UserDto>.Failure(new Error($"Validation Failed: {string.Join(", ", errors)}"));
             }
         }
-
+        
+        public async Task<Result<UserDto>> RgisterAsync(RegisterDto RegisterDto)
+        {
+            var user = new ApplicationUser
+            {
+                Email = RegisterDto.Email,
+                UserName = RegisterDto.UserName ?? RegisterDto.Email.Split("@")[0],
+            };
+            var result = await _userManager.CreateAsync(user, RegisterDto.Password);
+            if (result.Succeeded)
+            {
+                try
+                {
+                    await _userManager.AddToRoleAsync(user, "Attendee");
+                    //await _userManager.AddToRoleAsync(user, "Admin");
+                    var token = await GenerateJwtToken(user);
+                    return Result<UserDto>.Success(new UserDto
+                    {
+                        Email = user.Email!,
+                        userName = user.UserName!,
+                        Token = token
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Result<UserDto>.Failure(new Error(ex.Message));
+                }
+            }
+            else
+            {
+                var errors = result.Errors.Select(e => e.Description).ToList();
+                return Result<UserDto>.Failure(new Error($"Validation Failed: {string.Join(", ", errors)}"));
+            }
+        }
         private async Task<string> GenerateJwtToken(ApplicationUser user)
         {
             // create the payload from the user info {Claims}

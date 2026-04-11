@@ -14,8 +14,8 @@ namespace DomainLayer.Models.Registeration
         public int EventId { get; set; }
         public RegistrationStatus RegisterationStatus { get; set; }
         public ApplicationUser User { get; set; }
-        public PaymentStatus paymentStatus { get; set; }
+        //public PaymentStatus paymentStatus { get; set; }
         public Event Event { get; set; }
-        public DateTime RegisteredAt { get; set; }
+        //public DateTime RegisteredAt { get; set; }
     }
 }

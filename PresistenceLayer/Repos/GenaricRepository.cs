@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Mapster;
 
 namespace PresistenceLayer.Repos
 {
@@ -16,7 +17,7 @@ namespace PresistenceLayer.Repos
     {
         public async Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> criteria, string[] includes = null)
         {
-            var entity = _eventDbContext.Set<TEntity>().AsTracking();
+            var entity = _eventDbContext.Set<TEntity>().AsNoTracking();
 
             if (includes != null)
                 foreach (var include in includes ?? Array.Empty<string>())
@@ -55,6 +56,17 @@ namespace PresistenceLayer.Repos
         public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return await _eventDbContext.Set<TEntity>().AnyAsync(predicate);
+        }
+
+        public IQueryable<TDto> FindAllAsync<TDto>(Expression<Func<TEntity, bool>> criteria, string[] includes = null)
+        {
+            var entity = _eventDbContext.Set<TEntity>().AsTracking();
+
+            if (includes != null)
+                foreach (var include in includes ?? Array.Empty<string>())
+                    entity = entity.Include(include);
+
+            return entity.Where(criteria).ProjectToType<TDto>();
         }
     }
 }

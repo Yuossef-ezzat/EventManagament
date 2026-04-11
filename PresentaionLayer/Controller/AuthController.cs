@@ -36,6 +36,27 @@ public class AuthController(IAuthService authService) : ControllerBase
 
         return Ok(result.Value);
     }
+    //[Authorize(Roles = "Admin")]
+    [HttpPost("CreateOrganizer")]
+    public async Task<IActionResult> CreateOrganizer([FromBody] RegisterDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var emailCheck = await authService.CheckEmailAsync(dto.Email);
+
+        if (emailCheck == null || emailCheck.IsFailure)
+            return BadRequest(new { Message = emailCheck?.Error?.Descriprion ?? "Failed to check email." });
+        
+        if (emailCheck.Value)
+            return Conflict(new { Message = "Email is already registered." });
+
+        var result = await authService.CreateOrganizerAsync(dto);
+        if (result == null || result.IsFailure)
+            return BadRequest(new { Message = result?.Error?.Descriprion ?? "Registration failed." });
+
+        return Ok(result.Value);
+    }
 
     // POST: api/auth/login
     [HttpPost("login")]
